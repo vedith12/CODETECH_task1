@@ -1,0 +1,199 @@
+## HTMLCODE:
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Quiz</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="quiz-container">
+        <h1>Quiz App</h1>
+        <div id="question-container">
+            <h2 id="question">Question and answers</h2>
+            <div id="options"></div>
+            <button id="next-button" onclick="nextQuestion()">Next</button>
+        </div>
+        <div id="result-container" style="display: none;">
+            <h2>Your Score: <span id="score"></span></h2>
+            <button onclick="restartQuiz()">Restart Quiz</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+
+
+
+
+
+## CSS CODE:
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f5f5f5;
+    margin: 0;
+}
+
+#quiz-container {
+    width: 100%;
+    max-width: 400px;
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+h1 {
+    color: #4a90e2;
+    margin-bottom: 20px;
+}
+
+#question {
+    margin-bottom: 15px;
+}
+
+#options {
+    display: flex;
+    flex-direction: column;
+}
+
+.option {
+    padding: 10px;
+    margin: 5px 0;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.option:hover {
+    background-color: #e0f0ff;
+}
+
+.option.correct {
+    background-color: #c8e6c9;
+}
+
+.option.wrong {
+    background-color: #ffcdd2;
+}
+
+#next-button {
+    padding: 10px;
+    margin-top: 15px;
+    font-size: 1em;
+    background-color: #4a90e2;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#next-button:hover {
+    background-color: #357abd;
+}
+
+
+#JAVASCRIPT CODE:
+
+const questions = [
+    {
+        question: "What is the capital of France?",
+        options: ["Paris", "London", "Berlin", "Madrid"],
+        answer: "Paris"
+    },
+    {
+        question: "Which language is used for web development?",
+        options: ["Python", "JavaScript", "C++", "Java"],
+        answer: "JavaScript"
+    },
+    {
+        question: "What is the largest planet in our solar system?",
+        options: ["Earth", "Mars", "Jupiter", "Saturn"],
+        answer: "Jupiter"
+    },
+    {
+        question: "Who painted the Mona Lisa?",
+        options: ["Vincent Van Gogh", "Pablo Picasso", "Leonardo da Vinci", "Michelangelo"],
+        answer: "Leonardo da Vinci"
+    }
+];
+
+let currentQuestionIndex = 0;
+let score = 0;
+
+function loadQuestion() {
+    const questionData = questions[currentQuestionIndex];
+    document.getElementById("question").textContent = questionData.question;
+
+    const optionsContainer = document.getElementById("options");
+    optionsContainer.innerHTML = ""; // Clear previous options
+
+    questionData.options.forEach(option => {
+        const optionElement = document.createElement("div");
+        optionElement.textContent = option;
+        optionElement.classList.add("option");
+        optionElement.addEventListener("click", () => selectAnswer(optionElement, option));
+        optionsContainer.appendChild(optionElement);
+    });
+
+    document.getElementById("next-button").style.display = "none";
+}
+
+function selectAnswer(optionElement, selectedOption) {
+    const questionData = questions[currentQuestionIndex];
+    const isCorrect = selectedOption === questionData.answer;
+
+    // Apply styles based on correctness
+    if (isCorrect) {
+        optionElement.classList.add("correct");
+        score++;
+    } else {
+        optionElement.classList.add("wrong");
+        document.querySelectorAll(".option").forEach(opt => {
+            if (opt.textContent === questionData.answer) {
+                opt.classList.add("correct");
+            }
+        });
+    }
+
+    // Disable further clicks after selecting an answer
+    document.querySelectorAll(".option").forEach(opt => opt.style.pointerEvents = "none");
+    document.getElementById("next-button").style.display = "block";
+}
+
+function nextQuestion() {
+    currentQuestionIndex++;
+
+    if (currentQuestionIndex < questions.length) {
+        loadQuestion();
+    } else {
+        showResults();
+    }
+}
+
+
+function showResults() {
+    document.getElementById("question-container").style.display = "none";
+    document.getElementById("result-container").style.display = "block";
+    document.getElementById("score").textContent = `${score} / ${questions.length}`;
+}
+
+
+function restartQuiz() {
+    currentQuestionIndex = 0;
+    score = 0;
+    document.getElementById("question-container").style.display = "block";
+    document.getElementById("result-container").style.display = "none";
+    loadQuestion();
+}
+
+loadQuestion();
